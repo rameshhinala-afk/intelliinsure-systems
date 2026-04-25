@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Claims Processor — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div>
+        <h1 class="ph-title">Claims Processor</h1>
+        <p class="ph-sub">AI-assisted claim evaluation, decision support &amp; queue management</p>
+      </div>
+      <span class="ai-chip">✦ AI Powered</span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="sw('new',this)">New Claim</div>
+      <div class="tab" onclick="sw('queue',this)">Claim Queue <span class="badge b-amber" style="margin-left:4px;font-size:10px;">6</span></div>
+      <div class="tab" onclick="sw('approved',this)">Approved</div>
+    </div>
+
+    <!-- New Claim -->
+    <div id="t-new">
+      <div class="col2">
+        <div class="card">
+          <div class="card-hd"><span class="card-title">Claim Details</span></div>
+          <div class="fg2">
+            <div class="fg">
+              <label>Claim Type</label>
+              <select id="c-type">
+                <option>Vehicle Damage</option><option>Medical Expense</option>
+                <option>Property Damage</option><option>Vehicle Theft</option>
+                <option>Natural Disaster</option><option>Personal Accident</option>
+                <option>Critical Illness</option><option>Life Claim</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Claim Amount (₹)</label>
+              <input type="text" id="c-amount" value="1,15,000"/>
+            </div>
+          </div>
+          <div class="fg2">
+            <div class="fg"><label>Policy ID</label><input type="text" id="c-pid" value="POL-2024-77812"/></div>
+            <div class="fg"><label>Incident Date</label><input type="date" id="c-date" value="2026-04-10"/></div>
+          </div>
+          <div class="fg2">
+            <div class="fg"><label>Claimant Name</label><input type="text" id="c-name" value="Arjun Menon"/></div>
+            <div class="fg"><label>Contact Number</label><input type="tel" id="c-phone" value="+91 94470 12345"/></div>
+          </div>
+          <div class="fg">
+            <label>Documents Submitted</label>
+            <input type="text" id="c-docs" value="FIR copy, RC book, Driving licence, Workshop estimate (₹1,15,000), Photos"/>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd"><span class="card-title">Incident Description</span></div>
+          <div class="fg">
+            <label>Full Incident Narrative</label>
+            <textarea id="c-desc" style="min-height:130px;">Vehicle rear-ended at an intersection on NH-44 near Hyderabad. Third party vehicle ran a red signal causing major damage to rear bumper, boot lid, and tail lamps. FIR lodged at Rajendranagar PS. Workshop estimate provided by authorised service centre. No injuries reported. Third-party details collected at scene.</textarea>
+          </div>
+          <div class="fg2">
+            <div class="fg">
+              <label>Prior Claims (3 yrs)</label>
+              <input type="number" id="c-prior" value="0" min="0"/>
+            </div>
+            <div class="fg">
+              <label>Policy Age (months)</label>
+              <input type="number" id="c-page" value="26" min="0"/>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-teal" onclick="processClaim()">✦ Process with AI</button>
+            <button class="btn" onclick="clearClaim()">Clear</button>
+            <div class="loading-row" id="c-load"><span class="spinner"></span>Evaluating claim…</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="c-result-wrap" class="card" style="display:none;">
+        <div class="card-hd">
+          <span class="card-title">AI Claim Decision</span>
+          <div style="display:flex;gap:8px;">
+            <span id="c-decision-badge" class="badge"></span>
+            <button class="btn btn-sm" onclick="copyEl('c-result')">Copy</button>
+          </div>
+        </div>
+        <div class="result-box" id="c-result"></div>
+      </div>
+    </div>
+
+    <!-- Queue -->
+    <div id="t-queue" style="display:none;">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="tbl">
+          <thead>
+            <tr><th style="padding:14px 14px;">ID</th><th>Claimant</th><th>Type</th><th>Amount</th><th>Filed</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:12px 14px;font-weight:700;">CLM-4412</td>
+              <td>Vikram Sethi</td><td>Vehicle Damage</td><td>₹1,40,000</td><td>Apr 18</td>
+              <td><span class="badge b-red">Fraud Risk</span></td>
+              <td><button class="btn btn-sm" onclick="loadQ('CLM-4412','Vehicle Damage','1,40,000','Vikram Sethi','Third collision claim in 14 months. Damage photos inconsistent with described impact. Repair shop flagged as previously involved in inflated estimates.',2,8)">Load</button></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 14px;font-weight:700;">CLM-4398</td>
+              <td>Deepika Rao</td><td>Health</td><td>₹62,000</td><td>Apr 16</td>
+              <td><span class="badge b-amber">Pending</span></td>
+              <td><button class="btn btn-sm" onclick="loadQ('CLM-4398','Medical Expense','62,000','Deepika Rao','Hospitalisation for 5 days — appendectomy. Discharge summary and bills attached. First-time claimant. Policy active for 3 years.',0,36)">Load</button></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 14px;font-weight:700;">CLM-4381</td>
+              <td>Santhosh Kumar</td><td>Property</td><td>₹3,20,000</td><td>Apr 12</td>
+              <td><span class="badge b-blue">Review</span></td>
+              <td><button class="btn btn-sm" onclick="loadQ('CLM-4381','Property Damage','3,20,000','Santhosh Kumar','Roof damage caused by cyclone Asna. Municipal disaster declaration available. Survey report from licensed surveyor attached.',0,18)">Load</button></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 14px;font-weight:700;">CLM-4370</td>
+              <td>Preethi Varma</td><td>Vehicle Theft</td><td>₹8,50,000</td><td>Apr 8</td>
+              <td><span class="badge b-blue">Review</span></td>
+              <td><button class="btn btn-sm" onclick="loadQ('CLM-4370','Vehicle Theft','8,50,000','Preethi Varma','High-value sedan reported stolen from apartment parking. Police NCB filed. Second theft claim in 4 years on different vehicles.',1,22)">Load</button></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 14px;font-weight:700;">CLM-4355</td>
+              <td>Rajan Pillai</td><td>Life</td><td>₹25,00,000</td><td>Apr 4</td>
+              <td><span class="badge b-amber">Pending</span></td>
+              <td><button class="btn btn-sm" onclick="loadQ('CLM-4355','Life Claim','25,00,000','Rajan Pillai','Death claim submitted by nominee. Policy 7 years old. Death due to cardiac arrest. Death certificate and medical records submitted.',0,84)">Load</button></td>
+            </tr>
+            <tr>
+              <td style="padding:12px 14px;font-weight:700;">CLM-4340</td>
+              <td>Ananya Mishra</td><td>Personal Accident</td><td>₹4,00,000</td><td>Mar 29</td>
+              <td><span class="badge b-amber">Pending</span></td>
+              <td><button class="btn btn-sm" onclick="loadQ('CLM-4340','Personal Accident','4,00,000','Ananya Mishra','Permanent partial disability (40%) following road accident. Orthopaedic surgeon certificate attached. Disability assessed at government hospital.',0,15)">Load</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Approved -->
+    <div id="t-approved" style="display:none;">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <table class="tbl">
+          <thead>
+            <tr><th style="padding:14px 14px;">ID</th><th>Claimant</th><th>Type</th><th>Amount</th><th>Approved</th><th>Payout</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:12px 14px;font-weight:700;">CLM-4310</td><td>Suresh Babu</td><td>Health</td><td>₹38,000</td><td>Apr 15</td><td><span class="badge b-green">₹36,500</span></td></tr>
+            <tr><td style="padding:12px 14px;font-weight:700;">CLM-4295</td><td>Geetha Nair</td><td>Vehicle Damage</td><td>₹72,000</td><td>Apr 13</td><td><span class="badge b-green">₹68,000</span></td></tr>
+            <tr><td style="padding:12px 14px;font-weight:700;">CLM-4280</td><td>Mohan Sharma</td><td>Property</td><td>₹1,10,000</td><td>Apr 11</td><td><span class="badge b-green">₹1,04,000</span></td></tr>
+            <tr><td style="padding:12px 14px;font-weight:700;">CLM-4261</td><td>Lakshmi Iyer</td><td>Health</td><td>₹2,20,000</td><td>Apr 8</td><td><span class="badge b-green">₹2,20,000</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+function sw(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['new','queue','approved'].forEach(id => {
+    document.getElementById('t-'+id).style.display = id===tab ? 'block' : 'none';
+  });
+}
+
+async function processClaim() {
+  const v = id => document.getElementById(id).value;
+  if (!v('c-desc').trim()) { toast('Please add incident description.','err'); return; }
+  setLoad('c-load', true);
+  document.getElementById('c-result-wrap').style.display = 'none';
+  try {
+    const result = await ai(
+      `Evaluate this insurance claim and provide a structured decision:\n\nClaim Type: ${v('c-type')}\nAmount Claimed: ₹${v('c-amount')}\nPolicy ID: ${v('c-pid')}\nIncident Date: ${v('c-date')}\nClaimant: ${v('c-name')} | ${v('c-phone')}\nDocuments: ${v('c-docs')}\nPrior Claims (3 yrs): ${v('c-prior')}\nPolicy Age: ${v('c-page')} months\n\nIncident Description:\n${v('c-desc')}\n\nProvide a structured claim decision:\n\n▸ DECISION\n  • Recommendation: Approve / Reject / Investigate / Partial Approve\n  • Confidence: High / Medium / Low\n\n▸ FRAUD RISK ASSESSMENT\n  • Risk Level: Low / Medium / High / Very High\n  • Key indicators observed\n\n▸ PAYOUT RECOMMENDATION\n  • Suggested payout amount (if approvable): ₹\n  • Deductions or conditions\n\n▸ JUSTIFICATION\n  • 4 key reasons for the decision\n\n▸ NEXT ACTIONS\n  • Immediate steps required\n\nBe decisive and professional. Indian insurance context.`,
+      'You are a senior claims adjuster with expertise in the Indian non-life insurance sector. Make clear, well-reasoned decisions.'
+    );
+    const lower = result.toLowerCase();
+    const badge = document.getElementById('c-decision-badge');
+    if (lower.includes('approve') && !lower.includes('reject')) {
+      badge.textContent = '✓ Approve Recommended'; badge.className = 'badge b-green';
+    } else if (lower.includes('reject')) {
+      badge.textContent = '✗ Rejection Flagged'; badge.className = 'badge b-red';
+    } else {
+      badge.textContent = '⚠ Investigation Required'; badge.className = 'badge b-amber';
+    }
+    document.getElementById('c-result').textContent = result;
+    document.getElementById('c-result-wrap').style.display = 'block';
+    toast('Claim processed!');
+  } catch(e) { toast('Failed: '+e.message,'err'); }
+  finally { setLoad('c-load',false); }
+}
+
+function loadQ(id,type,amount,name,desc,prior,page) {
+  sw('new', document.querySelectorAll('.tab')[0]);
+  document.getElementById('c-pid').value = id;
+  document.getElementById('c-name').value = name;
+  document.getElementById('c-amount').value = amount;
+  document.getElementById('c-desc').value = desc;
+  document.getElementById('c-prior').value = prior;
+  document.getElementById('c-page').value = page;
+  // set select
+  const sel = document.getElementById('c-type');
+  for(let o of sel.options) if(o.value===type){sel.value=type;break;}
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('Claim '+id+' loaded.');
+}
+
+function clearClaim() {
+  document.getElementById('c-desc').value = '';
+  document.getElementById('c-result-wrap').style.display = 'none';
+}
+</script>
+</body>
+</html>

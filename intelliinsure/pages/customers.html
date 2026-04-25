@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customers — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div><h1 class="ph-title">Customer Database</h1><p class="ph-sub">Policyholder profiles and insurance portfolio overview</p></div>
+      <button class="btn btn-teal">+ Add Customer</button>
+    </div>
+
+    <!-- Search & Filter bar -->
+    <div class="card" style="padding:14px 20px;margin-bottom:16px;">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="search" placeholder="Search by name, policy ID or phone…" style="flex:1;min-width:200px;" oninput="filterTable()"/>
+        <select id="filter-type" onchange="filterTable()" style="width:160px;">
+          <option value="">All Policy Types</option>
+          <option>Auto</option><option>Health</option><option>Life</option><option>Property</option>
+        </select>
+        <select id="filter-risk" onchange="filterTable()" style="width:130px;">
+          <option value="">All Risk Levels</option>
+          <option>Low</option><option>Medium</option><option>High</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="tbl" id="cust-table">
+        <thead>
+          <tr>
+            <th style="padding:13px 14px;">Customer</th>
+            <th>Policy ID</th>
+            <th>Type</th>
+            <th>Coverage</th>
+            <th>Premium/yr</th>
+            <th>Risk</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="cust-body">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Customer AI Profile -->
+    <div id="profile-wrap" class="card" style="display:none;">
+      <div class="card-hd">
+        <span class="card-title" id="profile-title">Customer AI Profile</span>
+        <div style="display:flex;gap:8px;">
+          <span class="ai-chip">✦ AI Generated</span>
+          <button class="btn btn-sm" onclick="document.getElementById('profile-wrap').style.display='none'">Close</button>
+        </div>
+      </div>
+      <div class="loading-row" id="p-load" style="margin-bottom:10px;"><span class="spinner"></span>Generating profile…</div>
+      <div class="result-box" id="profile-result" style="display:none;"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+const CUSTOMERS = [
+  { name:'Arjun Menon',        id:'POL-2024-77812', type:'Auto',     cover:'₹15,00,000', prem:'₹18,500', risk:'Low',    status:'Active',   age:32, occ:'IT Engineer',       claims:0 },
+  { name:'Kavya Nambiar',      id:'POL-2024-65441', type:'Health',   cover:'₹1,00,00,000',prem:'₹42,000',risk:'Low',    status:'Active',   age:38, occ:'Doctor',             claims:1 },
+  { name:'Vikram Sethi',       id:'POL-2023-90112', type:'Auto',     cover:'₹12,00,000', prem:'₹24,000', risk:'High',   status:'Flagged',  age:44, occ:'Business Owner',     claims:3 },
+  { name:'Deepika Rao',        id:'POL-2023-77301', type:'Health',   cover:'₹50,00,000', prem:'₹28,000', risk:'Low',    status:'Active',   age:29, occ:'Teacher',            claims:1 },
+  { name:'Karthik Subramanian',id:'POL-2022-54200', type:'Life',     cover:'₹2,00,00,000',prem:'₹55,000',risk:'Medium', status:'Active',   age:45, occ:'Finance Manager',   claims:0 },
+  { name:'Preethi Varma',      id:'POL-2024-88934', type:'Auto',     cover:'₹25,00,000', prem:'₹32,000', risk:'Medium', status:'Review',   age:36, occ:'Architect',          claims:1 },
+  { name:'Santhosh Kumar',     id:'POL-2023-44120', type:'Property', cover:'₹45,00,000', prem:'₹18,000', risk:'Low',    status:'Active',   age:52, occ:'Retired Banker',     claims:0 },
+  { name:'Ananya Mishra',      id:'POL-2024-31802', type:'Auto',     cover:'₹10,00,000', prem:'₹14,500', risk:'Low',    status:'Active',   age:24, occ:'Journalist',         claims:0 },
+  { name:'Rajan Pillai',       id:'POL-2018-12034', type:'Life',     cover:'₹1,00,00,000',prem:'₹38,000',risk:'Low',    status:'Claim',    age:58, occ:'Retired',            claims:0 },
+  { name:'Sudha Krishnamurthy',id:'POL-2021-67445', type:'Health',   cover:'₹75,00,000', prem:'₹35,000', risk:'Medium', status:'Active',   age:62, occ:'Homemaker',          claims:2 },
+];
+
+function riskBadge(r) {
+  if (r==='Low')    return '<span class="badge b-green">Low</span>';
+  if (r==='Medium') return '<span class="badge b-amber">Medium</span>';
+  if (r==='High')   return '<span class="badge b-red">High</span>';
+  return r;
+}
+function statusBadge(s) {
+  const map = { Active:'b-teal', Flagged:'b-red', Review:'b-amber', Claim:'b-blue' };
+  return `<span class="badge ${map[s]||'b-teal'}">${s}</span>`;
+}
+
+function renderTable(data) {
+  const body = document.getElementById('cust-body');
+  body.innerHTML = data.map(c => `
+    <tr>
+      <td style="padding:11px 14px;">
+        <div style="font-weight:600;">${c.name}</div>
+        <div style="font-size:12px;color:var(--text-muted);">${c.age} yrs · ${c.occ}</div>
+      </td>
+      <td style="font-family:monospace;font-size:12.5px;">${c.id}</td>
+      <td>${c.type}</td>
+      <td>${c.cover}</td>
+      <td>${c.prem}</td>
+      <td>${riskBadge(c.risk)}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td>
+        <button class="btn btn-sm" onclick='viewProfile(${JSON.stringify(c)})'>AI Profile</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const type = document.getElementById('filter-type').value;
+  const risk = document.getElementById('filter-risk').value;
+  renderTable(CUSTOMERS.filter(c =>
+    (!q || c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)) &&
+    (!type || c.type === type) &&
+    (!risk || c.risk === risk)
+  ));
+}
+
+renderTable(CUSTOMERS);
+
+async function viewProfile(c) {
+  document.getElementById('profile-title').textContent = c.name + ' — AI Profile';
+  document.getElementById('profile-wrap').style.display = 'block';
+  document.getElementById('profile-result').style.display = 'none';
+  setLoad('p-load', true);
+  document.getElementById('profile-wrap').scrollIntoView({behavior:'smooth'});
+  try {
+    const result = await ai(
+      `Generate a concise AI customer profile for an insurance company:\n\nName: ${c.name}\nAge: ${c.age} | Occupation: ${c.occ}\nPolicy Type: ${c.type}\nPolicy ID: ${c.id}\nCoverage: ${c.cover}\nAnnual Premium: ${c.prem}\nRisk Level: ${c.risk}\nStatus: ${c.status}\nClaims Filed (3 yrs): ${c.claims}\n\nProvide:\n\n▸ CUSTOMER OVERVIEW\n  • Profile summary (2 sentences)\n\n▸ RISK PROFILE\n  • Key risk factors and positives\n\n▸ POLICY ASSESSMENT\n  • Is coverage adequate for profile?\n  • Cross-sell / upsell opportunities\n\n▸ RELATIONSHIP SCORE\n  • Loyalty level: [New/Developing/Stable/Loyal/Strategic]\n  • Retention risk: [Low/Medium/High]\n\n▸ RECOMMENDED ACTIONS\n  • 2–3 specific actions for the account manager\n\nBe concise and actionable.`,
+      'You are an insurance customer relationship AI helping underwriters and account managers understand customer profiles.'
+    );
+    document.getElementById('profile-result').textContent = result;
+    document.getElementById('profile-result').style.display = 'block';
+    toast('Profile generated!');
+  } catch(e) { toast('Failed: '+e.message,'err'); }
+  finally { setLoad('p-load',false); }
+}
+</script>
+</body>
+</html>

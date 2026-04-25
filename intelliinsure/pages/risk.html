@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Risk Scorer — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div>
+        <h1 class="ph-title">Risk Scorer</h1>
+        <p class="ph-sub">AI-driven customer risk profiling and underwriting support</p>
+      </div>
+      <span class="ai-chip">✦ AI Powered</span>
+    </div>
+
+    <div class="info-box ib-warn">
+      <span>⚠</span>
+      <span>Risk scores guide premium loading and underwriting decisions. Scores are AI advisory outputs — final decisions require underwriter sign-off for high-value policies.</span>
+    </div>
+
+    <div class="col2">
+      <!-- Demographic Profile -->
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Applicant Demographics</span></div>
+        <div class="fg2">
+          <div class="fg"><label>Full Name</label><input type="text" id="r-name" value="Karthik Subramanian"/></div>
+          <div class="fg"><label>Age</label><input type="number" id="r-age" value="45" min="18" max="80"/></div>
+        </div>
+        <div class="fg2">
+          <div class="fg">
+            <label>Gender</label>
+            <select id="r-gender"><option>Male</option><option>Female</option><option>Other</option></select>
+          </div>
+          <div class="fg">
+            <label>Marital Status</label>
+            <select id="r-marital"><option>Married</option><option>Single</option><option>Divorced</option><option>Widowed</option></select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Occupation Category</label>
+          <select id="r-occ">
+            <option>Salaried — IT/Technology</option>
+            <option>Salaried — Banking/Finance</option>
+            <option>Salaried — Government</option>
+            <option>Self-Employed — Professional</option>
+            <option>Business Owner</option>
+            <option>Freelancer / Contractor</option>
+            <option>Retired</option>
+            <option>Agriculturist</option>
+          </select>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Annual Income (₹)</label><input type="text" id="r-income" value="28,00,000"/></div>
+          <div class="fg"><label>CIBIL / Credit Score</label><input type="number" id="r-credit" value="780" min="300" max="900"/></div>
+        </div>
+        <div class="fg2">
+          <div class="fg">
+            <label>Smoker / Tobacco</label>
+            <select id="r-smoke"><option>No</option><option>Yes — Light</option><option>Yes — Heavy</option><option>Ex-smoker</option></select>
+          </div>
+          <div class="fg">
+            <label>Alcohol Consumption</label>
+            <select id="r-alc"><option>None</option><option>Occasional</option><option>Regular</option></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insurance & Health Profile -->
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Insurance &amp; Health Profile</span></div>
+        <div class="fg">
+          <label>Insurance Type Applying For</label>
+          <select id="r-instype">
+            <option>Auto Insurance</option>
+            <option>Health Insurance</option>
+            <option>Life Insurance</option>
+            <option>Property Insurance</option>
+          </select>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Prior Claims (3 years)</label><input type="number" id="r-claims" value="1" min="0"/></div>
+          <div class="fg"><label>Policy Duration (years)</label><input type="number" id="r-dur" value="5" min="1"/></div>
+        </div>
+        <div class="fg">
+          <label>Location / Risk Zone</label>
+          <select id="r-zone">
+            <option>Metro — Tier 1 (High Risk)</option>
+            <option>Semi-urban — Tier 2 (Medium Risk)</option>
+            <option>Rural — Tier 3 (Low Risk)</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Pre-existing Medical Conditions</label>
+          <select id="r-health">
+            <option>None</option>
+            <option>Type 2 Diabetes</option>
+            <option>Hypertension</option>
+            <option>Heart Disease / CAD</option>
+            <option>Obesity (BMI > 30)</option>
+            <option>Kidney Disease</option>
+            <option>Multiple Conditions</option>
+          </select>
+        </div>
+        <div class="fg2">
+          <div class="fg">
+            <label>Driving Record (if Auto)</label>
+            <select id="r-drive">
+              <option>Clean — No violations</option>
+              <option>1–2 minor violations</option>
+              <option>Accident in last 3 yrs</option>
+              <option>Multiple violations</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Sum Assured (₹)</label>
+            <input type="text" id="r-sumassured" value="50,00,000"/>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+          <button class="btn btn-teal" onclick="scoreRisk()">✦ Calculate Risk Score</button>
+          <div class="loading-row" id="r-load"><span class="spinner"></span>Scoring…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result card -->
+    <div id="r-result-wrap" class="card" style="display:none;">
+      <div class="card-hd">
+        <span class="card-title">Risk Assessment Result</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="r-score-chip" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;"></span>
+          <button class="btn btn-sm" onclick="copyEl('r-result')">Copy</button>
+        </div>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge-track"><div class="gauge-needle" id="r-needle" style="left:10%;"></div></div>
+        <div class="gauge-lbl"><span>Low (1)</span><span>Medium (5)</span><span>High (10)</span></div>
+      </div>
+      <div class="result-box" id="r-result"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+async function scoreRisk() {
+  const v = id => document.getElementById(id).value;
+  setLoad('r-load',true);
+  document.getElementById('r-result-wrap').style.display = 'none';
+  try {
+    const result = await ai(
+      `Score this insurance applicant's risk profile on a scale of 1–10 (1 = very low risk, 10 = very high risk).\n\nApplicant: ${v('r-name')}\nAge: ${v('r-age')} | Gender: ${v('r-gender')} | Marital: ${v('r-marital')}\nOccupation: ${v('r-occ')}\nAnnual Income: ₹${v('r-income')}\nCIBIL Score: ${v('r-credit')}/900\nSmoker: ${v('r-smoke')} | Alcohol: ${v('r-alc')}\nInsurance Applied: ${v('r-instype')}\nSum Assured: ₹${v('r-sumassured')}\nPrior Claims (3 yrs): ${v('r-claims')}\nPolicy Duration: ${v('r-dur')} years\nLocation: ${v('r-zone')}\nPre-existing Conditions: ${v('r-health')}\nDriving Record: ${v('r-drive')}\n\nProvide:\n\n▸ RISK SCORE: X/10\n▸ RISK BAND: [Low / Medium / High / Very High]\n\n▸ FACTOR BREAKDOWN\n  • 5 key factors with their individual impact (Low/Medium/High)\n\n▸ PREMIUM LOADING\n  • Recommended loading % on base premium\n  • Any special conditions\n\n▸ UNDERWRITING RECOMMENDATION\n  • Decision: Accept / Accept with conditions / Refer / Decline\n  • Specific terms if accepted\n\n▸ MONITORING FLAGS\n  • Items to watch over policy term\n\nStart EXACTLY with "Risk Score: X/10" on line 1. Use bullet points (•).`,
+      'You are a chief underwriter specialising in actuarial risk assessment for Indian insurance companies.'
+    );
+    document.getElementById('r-result').textContent = result;
+    document.getElementById('r-result-wrap').style.display = 'block';
+
+    const match = result.match(/Risk Score:\s*(\d+(?:\.\d+)?)/i);
+    if (match) {
+      const score = Math.min(10, Math.max(1, parseFloat(match[1])));
+      document.getElementById('r-needle').style.left = ((score-1)/9*100)+'%';
+      const chip = document.getElementById('r-score-chip');
+      chip.textContent = score.toFixed(1)+'/10';
+      chip.style.color = score<=3 ? 'var(--green)' : score<=6 ? 'var(--amber)' : 'var(--red)';
+    }
+    toast('Risk score ready!');
+  } catch(e) { toast('Failed: '+e.message,'err'); }
+  finally { setLoad('r-load',false); }
+}
+</script>
+</body>
+</html>

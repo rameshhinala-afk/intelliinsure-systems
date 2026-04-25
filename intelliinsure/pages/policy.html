@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Policy Analyzer — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div>
+        <h1 class="ph-title">Policy Analyzer</h1>
+        <p class="ph-sub">AI-powered policy suitability and coverage assessment</p>
+      </div>
+      <span class="ai-chip">✦ AI Powered</span>
+    </div>
+
+    <div class="info-box ib-info">
+      <span>ℹ</span>
+      <span>Enter policy details below. IntelliInsure AI will assess suitability, flag coverage gaps, estimate premium range, and provide underwriting guidance.</span>
+    </div>
+
+    <div class="col2">
+      <!-- Left: Basic Info -->
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Policy Information</span></div>
+
+        <div class="fg2">
+          <div class="fg">
+            <label>Policy Type</label>
+            <select id="pol-type">
+              <option>Auto Insurance</option>
+              <option>Health Insurance</option>
+              <option>Life Insurance</option>
+              <option>Property Insurance</option>
+              <option>Travel Insurance</option>
+              <option>Commercial / Business</option>
+              <option>Marine Insurance</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Insurer Name</label>
+            <input type="text" id="pol-insurer" value="Star Health Insurance"/>
+          </div>
+        </div>
+
+        <div class="fg2">
+          <div class="fg">
+            <label>Policyholder Name</label>
+            <input type="text" id="pol-name" value="Kavya Nambiar"/>
+          </div>
+          <div class="fg">
+            <label>Age</label>
+            <input type="number" id="pol-age" value="38" min="18" max="80"/>
+          </div>
+        </div>
+
+        <div class="fg2">
+          <div class="fg">
+            <label>Annual Income (₹)</label>
+            <input type="text" id="pol-income" value="22,00,000"/>
+          </div>
+          <div class="fg">
+            <label>Coverage Amount (₹)</label>
+            <input type="text" id="pol-cover" value="1,00,00,000"/>
+          </div>
+        </div>
+
+        <div class="fg2">
+          <div class="fg">
+            <label>Annual Premium (₹)</label>
+            <input type="text" id="pol-prem" value="42,000"/>
+          </div>
+          <div class="fg">
+            <label>Policy Term (years)</label>
+            <input type="number" id="pol-term" value="10" min="1" max="40"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Clauses + Analysis -->
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Policy Details & Clauses</span></div>
+
+        <div class="fg">
+          <label>Policy Description / Terms</label>
+          <textarea id="pol-desc" style="min-height:110px;">Comprehensive health insurance policy for individual. Covers in-patient hospitalisation, day-care procedures, pre and post hospitalisation (60/90 days). No room-rent capping. Includes critical illness rider for cancer, stroke, heart attack. 2-year waiting period for pre-existing conditions. No-claim bonus: 10% per year up to 50%.</textarea>
+        </div>
+
+        <div class="fg">
+          <label>Special Add-ons / Riders</label>
+          <input type="text" id="pol-addons" value="Critical illness rider, Personal accident cover, Maternity benefit"/>
+        </div>
+
+        <div class="fg">
+          <label>Exclusions Mentioned</label>
+          <input type="text" id="pol-excl" value="Cosmetic surgery, dental, OPD (first year), self-inflicted injuries"/>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;">
+          <button class="btn btn-teal" onclick="analyzePolicy()">✦ Analyze Policy</button>
+          <button class="btn" onclick="document.getElementById('pol-result-wrap').style.display='none'">Reset</button>
+          <div class="loading-row" id="pol-load"><span class="spinner"></span>Analyzing…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="pol-result-wrap" class="card" style="display:none;">
+      <div class="card-hd">
+        <span class="card-title">AI Analysis Report</span>
+        <button class="btn btn-sm" onclick="copyEl('pol-result')">Copy</button>
+      </div>
+      <div class="result-box" id="pol-result"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+async function analyzePolicy() {
+  const v = id => document.getElementById(id).value;
+  if (!v('pol-desc').trim()) { toast('Please add policy description.','err'); return; }
+  setLoad('pol-load', true);
+  document.getElementById('pol-result-wrap').style.display = 'none';
+  try {
+    const result = await ai(
+      `Analyze this insurance policy comprehensively:\n\nPolicy Type: ${v('pol-type')}\nInsurer: ${v('pol-insurer')}\nPolicyholder: ${v('pol-name')}, Age ${v('pol-age')}\nAnnual Income: ₹${v('pol-income')}\nCoverage: ₹${v('pol-cover')}\nPremium: ₹${v('pol-prem')} per year\nTerm: ${v('pol-term')} years\nAdd-ons: ${v('pol-addons')}\nExclusions: ${v('pol-excl')}\nPolicy Terms:\n${v('pol-desc')}\n\nProvide a structured assessment under these headings:\n\n▸ OVERALL SUITABILITY\n  • Is this policy well-matched to the customer profile?\n  • Value-for-money assessment\n\n▸ COVERAGE ANALYSIS\n  • Key coverages and their adequacy\n  • Critical gaps or missing protections\n\n▸ PREMIUM EVALUATION\n  • Is the premium justified?\n  • Market benchmark comparison\n\n▸ RISK LEVEL\n  • Underwriting risk: Low / Medium / High\n  • Key risk factors identified\n\n▸ RECOMMENDATIONS\n  • 3 specific, actionable recommendations\n  • Suggested policy enhancements\n\nUse bullet points (•). Be professional and precise. Context: Indian insurance market.`,
+      'You are a senior insurance policy analyst and underwriter with 20 years of experience in the Indian insurance sector. Provide expert, actionable analysis.'
+    );
+    document.getElementById('pol-result').textContent = result;
+    document.getElementById('pol-result-wrap').style.display = 'block';
+    toast('Analysis complete!');
+  } catch(e) { toast('Failed: ' + e.message, 'err'); }
+  finally { setLoad('pol-load', false); }
+}
+</script>
+</body>
+</html>

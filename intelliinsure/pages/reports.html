@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reports — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div><h1 class="ph-title">AI Reports</h1><p class="ph-sub">Intelligent portfolio analysis and executive reporting</p></div>
+      <span class="ai-chip">✦ AI Powered</span>
+    </div>
+
+    <div class="col2">
+      <!-- Generator -->
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Report Generator</span></div>
+        <div class="fg">
+          <label>Report Type</label>
+          <select id="rep-type">
+            <option>Monthly Claims Analysis Report</option>
+            <option>Quarterly Fraud Intelligence Summary</option>
+            <option>Portfolio Risk Heat Map Analysis</option>
+            <option>Premium vs Claims Variance Report</option>
+            <option>Underwriting Performance Review</option>
+            <option>Customer Retention Risk Report</option>
+            <option>Regulatory Compliance Status Report</option>
+          </select>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Period From</label><input type="date" id="rep-from" value="2026-04-01"/></div>
+          <div class="fg"><label>Period To</label><input type="date" id="rep-to" value="2026-04-25"/></div>
+        </div>
+        <div class="fg">
+          <label>Data Inputs (optional summary)</label>
+          <textarea id="rep-data" style="min-height:80px;">Active policies: 18,542. New policies: 412. Claims filed: 2,187. Approvals: 76%. Rejections: 14%. Under investigation: 10%. Fraud alerts: 74. Claims payout: ₹9.2 Cr. Fraud prevented: ₹1.4 Cr. Avg risk score: 3.8/10. Top claim categories: Auto (41%), Health (26%), Property (19%).</textarea>
+        </div>
+        <div class="fg">
+          <label>Report Audience</label>
+          <select id="rep-audience">
+            <option>Senior Management / Board</option>
+            <option>Underwriting Team</option>
+            <option>Claims Department</option>
+            <option>Fraud Investigation Unit</option>
+            <option>Regulatory Authority</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-teal" onclick="genReport()">✦ Generate Report</button>
+          <div class="loading-row" id="rep-load"><span class="spinner"></span>Generating report…</div>
+        </div>
+      </div>
+
+      <!-- Quick Insights -->
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Quick Intelligence Queries</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <button class="btn" style="justify-content:flex-start;text-align:left;" onclick="quickQuery('Analyse top 5 fraud patterns currently affecting Indian motor insurance and how to counter them')">↗ Top fraud patterns — Motor insurance</button>
+          <button class="btn" style="justify-content:flex-start;text-align:left;" onclick="quickQuery('What are the key factors driving health insurance claim inflation in India in 2026')">↗ Health insurance claim inflation drivers</button>
+          <button class="btn" style="justify-content:flex-start;text-align:left;" onclick="quickQuery('Provide 5 premium optimisation strategies for a mid-size Indian general insurance company')">↗ Premium optimisation strategies</button>
+          <button class="btn" style="justify-content:flex-start;text-align:left;" onclick="quickQuery('What IRDAI regulatory changes in 2025–2026 should insurance companies prioritise for compliance')">↗ IRDAI regulatory compliance — 2025-26</button>
+          <button class="btn" style="justify-content:flex-start;text-align:left;" onclick="quickQuery('How can AI improve insurance customer retention and reduce policy lapse rates')">↗ AI-driven customer retention tactics</button>
+          <button class="btn" style="justify-content:flex-start;text-align:left;" onclick="quickQuery('Evaluate telematics and usage-based insurance opportunities in the Indian market')">↗ Telematics / UBI opportunities in India</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="stat-trio" style="margin-bottom:18px;">
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--teal);">₹9.2Cr</div>
+        <div class="stat-lbl">Claims Paid — April 2026</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--green);">76%</div>
+        <div class="stat-lbl">Approval Rate</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--amber);">₹1.4Cr</div>
+        <div class="stat-lbl">Fraud Saved</div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="rep-result-wrap" class="card" style="display:none;">
+      <div class="card-hd">
+        <span class="card-title" id="rep-result-title">Report</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm" onclick="copyEl('rep-result')">Copy Full Report</button>
+          <button class="btn btn-sm" onclick="document.getElementById('rep-result-wrap').style.display='none'">Close</button>
+        </div>
+      </div>
+      <div class="result-box" id="rep-result"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+async function genReport() {
+  const v = id => document.getElementById(id).value;
+  setLoad('rep-load',true);
+  document.getElementById('rep-result-wrap').style.display='none';
+  try {
+    const result = await ai(
+      `Generate a professional ${v('rep-type')} for an Indian insurance company.\n\nPeriod: ${v('rep-from')} to ${v('rep-to')}\nAudience: ${v('rep-audience')}\n\nData:\n${v('rep-data')}\n\nStructure the report with:\n\n📊 EXECUTIVE SUMMARY\n  • 3 headline findings\n\n📈 KEY METRICS & PERFORMANCE\n  • All metrics with period-on-period comparison\n  • RAG status (Red/Amber/Green) for each\n\n🔍 DEEP DIVE ANALYSIS\n  • Trends and patterns\n  • Root cause analysis for anomalies\n\n✅ HIGHLIGHTS\n  • What performed well and why\n\n⚠ CONCERNS & RISKS\n  • Items requiring management attention\n\n📋 STRATEGIC RECOMMENDATIONS\n  • 5 prioritised recommendations with expected impact\n  • Timeline for implementation\n\n📅 NEXT STEPS\n  • Immediate actions (within 30 days)\n  • Medium-term actions (30–90 days)\n\nUse professional language appropriate for ${v('rep-audience')}. Indian insurance context. Use ₹ for currency.`,
+      'You are a senior insurance analytics professional creating board-level management reports for an Indian insurance company.'
+    );
+    document.getElementById('rep-result-title').textContent = v('rep-type');
+    document.getElementById('rep-result').textContent = result;
+    document.getElementById('rep-result-wrap').style.display='block';
+    toast('Report ready!');
+  } catch(e) { toast('Failed: '+e.message,'err'); }
+  finally { setLoad('rep-load',false); }
+}
+
+async function quickQuery(query) {
+  setLoad('rep-load',true);
+  document.getElementById('rep-result-wrap').style.display='none';
+  try {
+    const result = await ai(query + '\n\nProvide a structured, insightful response with specific data points, examples, and actionable recommendations. Indian insurance market context. Use bullet points (•).',
+      'You are a senior insurance industry analyst and consultant with deep expertise in the Indian insurance market.');
+    document.getElementById('rep-result-title').textContent = 'Intelligence Query';
+    document.getElementById('rep-result').textContent = result;
+    document.getElementById('rep-result-wrap').style.display='block';
+    toast('Insight ready!');
+  } catch(e) { toast('Failed: '+e.message,'err'); }
+  finally { setLoad('rep-load',false); }
+}
+</script>
+</body>
+</html>

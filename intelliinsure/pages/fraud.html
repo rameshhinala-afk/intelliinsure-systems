@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fraud Detector — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div>
+        <h1 class="ph-title">Fraud Detector</h1>
+        <p class="ph-sub">AI pattern analysis for suspicious claim detection &amp; SIU referral</p>
+      </div>
+      <span class="ai-chip">✦ AI Powered</span>
+    </div>
+
+    <div class="info-box ib-danger">
+      <span>🛡</span>
+      <span>High-risk findings should be escalated to the Special Investigation Unit (SIU). AI flags are advisory — final fraud determination requires human investigation.</span>
+    </div>
+
+    <div class="col2">
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Claim Metadata</span></div>
+        <div class="fg2">
+          <div class="fg"><label>Claim ID</label><input type="text" id="f-id" value="CLM-4412"/></div>
+          <div class="fg">
+            <label>Claim Type</label>
+            <select id="f-type">
+              <option>Vehicle Damage</option><option>Medical Expense</option>
+              <option>Property Damage</option><option>Vehicle Theft</option>
+              <option>Natural Disaster</option><option>Personal Accident</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Claim Amount (₹)</label><input type="text" id="f-amount" value="1,40,000"/></div>
+          <div class="fg"><label>Prior Claims (same holder)</label><input type="number" id="f-prior" value="3" min="0"/></div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Policy Age (months)</label><input type="number" id="f-page" value="8" min="0"/></div>
+          <div class="fg"><label>Months Since Last Claim</label><input type="number" id="f-lastclm" value="4" min="0"/></div>
+        </div>
+        <div class="fg2">
+          <div class="fg">
+            <label>Claim Timing</label>
+            <select id="f-timing">
+              <option>Normal business hours</option>
+              <option>Late night / Early morning</option>
+              <option>Weekend / Holiday</option>
+              <option>Just before policy renewal</option>
+              <option>Shortly after policy start</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Location Verification</label>
+            <select id="f-loc">
+              <option>GPS / Location confirmed</option>
+              <option>GPS mismatch detected</option>
+              <option>Location unverifiable</option>
+              <option>No GPS data available</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Narrative &amp; Red Flags</span></div>
+        <div class="fg">
+          <label>Full Claim Narrative</label>
+          <textarea id="f-text" style="min-height:110px;">Vehicle rear collision claim. However, this is the third collision claim in 14 months from the same policyholder. Damage photos show impact inconsistent with described direction of collision. The repair shop is flagged as having previously submitted inflated estimates. Claimant's workshop estimate is 65% higher than the insurer's surveyor's independent assessment.</textarea>
+        </div>
+        <div class="fg">
+          <label>Anomalies / Red Flags Noted</label>
+          <input type="text" id="f-flags" value="Repeat claimant, photo inconsistency, inflated estimate, flagged workshop"/>
+        </div>
+        <div class="fg">
+          <label>Third Party Involvement</label>
+          <select id="f-tp">
+            <option>No third party</option>
+            <option>Third party verified</option>
+            <option>Third party uncontactable</option>
+            <option>Third party is acquaintance</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;">
+          <button class="btn btn-danger" onclick="detectFraud()">🛡 Run Fraud Analysis</button>
+          <button class="btn" onclick="clearFraud()">Clear</button>
+          <div class="loading-row" id="f-load"><span class="spinner"></span>Scanning for fraud signals…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="f-result-wrap" class="card" style="display:none;">
+      <div class="card-hd">
+        <span class="card-title">Fraud Analysis Result</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span id="f-badge" class="badge"></span>
+          <button class="btn btn-sm" onclick="copyEl('f-result')">Copy</button>
+        </div>
+      </div>
+      <div class="result-box" id="f-result"></div>
+    </div>
+
+    <!-- Case Library -->
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Case Library — Load Sample</span></div>
+      <table class="tbl">
+        <thead>
+          <tr><th style="padding:10px 12px;">ID</th><th>Type</th><th>Amount</th><th>Risk</th><th>Key Flag</th><th>Load</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:10px 12px;font-weight:700;">CLM-4412</td>
+            <td>Vehicle Damage</td><td>₹1,40,000</td>
+            <td><span class="badge b-red">Very High</span></td>
+            <td>Repeat + inflated estimate + GPS mismatch</td>
+            <td><button class="btn btn-sm" onclick="load('CLM-4412','Vehicle Damage','1,40,000',3,8,4,'Shortly after policy start','GPS mismatch detected','Vehicle rear collision claim. Third collision in 14 months. Damage photos inconsistent with described impact direction. Workshop flagged for inflated estimates. Surveyor assessment 65% lower.','Repeat claimant, photo inconsistency, inflated estimate, flagged workshop','Third party uncontactable')">Load</button></td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;font-weight:700;">CLM-3891</td>
+            <td>Medical</td><td>₹4,20,000</td>
+            <td><span class="badge b-red">High</span></td>
+            <td>Hospital bills from same dates at two hospitals</td>
+            <td><button class="btn btn-sm" onclick="load('CLM-3891','Medical Expense','4,20,000',2,18,6,'Normal business hours','Location unverifiable','Patient claims 14-day hospitalisation but discharge summary shows 3 days. Invoices from two different hospitals for overlapping dates. Diagnosis codes differ across documents. Doctor signature inconsistency flagged by internal reviewer.','Overlapping hospital records, discharge mismatch, duplicate billing','No third party')">Load</button></td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;font-weight:700;">CLM-3744</td>
+            <td>Property</td><td>₹18,00,000</td>
+            <td><span class="badge b-red">High</span></td>
+            <td>Policy taken 28 days before total loss fire</td>
+            <td><button class="btn btn-sm" onclick="load('CLM-3744','Property Damage','18,00,000',0,1,1,'Shortly after policy start','Location unverifiable','Total property loss from fire reported. Policy taken just 28 days prior. Fire department found no accelerant but reported the fire started simultaneously at two separate points. Neighbours report no fire. Market value of property significantly lower than insured value.','New policy, suspicious fire origin, overvaluation','No third party')">Load</button></td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;font-weight:700;">CLM-3602</td>
+            <td>Vehicle Theft</td><td>₹12,50,000</td>
+            <td><span class="badge b-amber">Medium</span></td>
+            <td>GPS shows vehicle stationary post reported theft</td>
+            <td><button class="btn btn-sm" onclick="load('CLM-3602','Vehicle Theft','12,50,000',1,14,8,'Late night / Early morning','GPS mismatch detected','Luxury SUV reported stolen at 2 AM. GPS tracker shows vehicle stationary in same location for 72 hours after reported theft date. FIR lodged but police unable to trace recovery. This is the second theft claim for the same policyholder in 4 years on different vehicles.','GPS anomaly, FIR timing inconsistency','No third party')">Load</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+<script>
+async function detectFraud() {
+  const v = id => document.getElementById(id).value;
+  if (!v('f-text').trim()) { toast('Add claim narrative.','err'); return; }
+  setLoad('f-load',true);
+  document.getElementById('f-result-wrap').style.display = 'none';
+  try {
+    const result = await ai(
+      `Analyse this insurance claim for fraud indicators:\n\nClaim ID: ${v('f-id')}\nClaim Type: ${v('f-type')}\nAmount: ₹${v('f-amount')}\nPrior Claims (same holder): ${v('f-prior')}\nPolicy Age: ${v('f-page')} months\nMonths Since Last Claim: ${v('f-lastclm')}\nClaim Timing: ${v('f-timing')}\nLocation Verification: ${v('f-loc')}\nThird Party: ${v('f-tp')}\nObserved Red Flags: ${v('f-flags')}\n\nClaim Narrative:\n${v('f-text')}\n\nProvide a structured fraud analysis:\n\n▸ FRAUD RISK: [Low/Medium/High/Very High] ([X]% confidence)\n\n▸ RED FLAGS DETECTED\n  • List each suspicious indicator with evidence from narrative\n\n▸ LEGITIMATE SIGNALS\n  • Factors that support authenticity\n\n▸ FRAUD PATTERN MATCH\n  • Known fraud patterns this matches (e.g. "staged collision", "arson for profit")\n  • Probability this is organised fraud vs opportunistic\n\n▸ RECOMMENDED ACTION\n  • Immediate: Approve / Hold / Refer to SIU / Reject\n  • Escalation level required\n\n▸ INVESTIGATION CHECKLIST\n  • 5 specific verification steps\n\nStart with "Fraud Risk: [level] ([X]% confidence)" on line 1.`,
+      'You are a senior insurance fraud investigator with expertise in Indian insurance fraud patterns and SIU investigations.'
+    );
+
+    document.getElementById('f-result').textContent = result;
+    document.getElementById('f-result-wrap').style.display = 'block';
+    const lower = result.toLowerCase();
+    const badge = document.getElementById('f-badge');
+    if (lower.includes('very high')) { badge.textContent='⚠ Very High Fraud Risk'; badge.className='badge b-red'; }
+    else if (lower.includes('high'))  { badge.textContent='⚠ High Fraud Risk';      badge.className='badge b-red'; }
+    else if (lower.includes('medium')){ badge.textContent='⚡ Medium Fraud Risk';   badge.className='badge b-amber'; }
+    else                               { badge.textContent='✓ Low Fraud Risk';       badge.className='badge b-green'; }
+    toast('Fraud analysis complete!');
+  } catch(e) { toast('Failed: '+e.message,'err'); }
+  finally { setLoad('f-load',false); }
+}
+
+function load(id,type,amount,prior,page,lastclm,timing,loc,narrative,flags,tp) {
+  document.getElementById('f-id').value = id;
+  document.getElementById('f-amount').value = amount;
+  document.getElementById('f-prior').value = prior;
+  document.getElementById('f-page').value = page;
+  document.getElementById('f-lastclm').value = lastclm;
+  document.getElementById('f-text').value = narrative;
+  document.getElementById('f-flags').value = flags;
+  // Set selects
+  const setSel = (id,val) => { const s=document.getElementById(id); for(let o of s.options) if(o.value===val){s.value=val;break;} };
+  setSel('f-type',type); setSel('f-timing',timing); setSel('f-loc',loc); setSel('f-tp',tp);
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('Case '+id+' loaded.');
+}
+
+function clearFraud() {
+  document.getElementById('f-text').value='';
+  document.getElementById('f-result-wrap').style.display='none';
+}
+</script>
+</body>
+</html>

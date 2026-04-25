@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — IntelliInsure Systems</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="js/sidebar.js"></script>
+  <script>buildSidebar('');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div>
+        <h1 class="ph-title">Dashboard</h1>
+        <p class="ph-sub">IntelliInsure AI Intelligence Overview</p>
+      </div>
+      <div class="ph-actions">
+        <span style="font-size:12px;color:var(--text-muted);" id="today"></span>
+        <a href="pages/claims.html" class="btn btn-teal">+ New Claim</a>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics-row">
+      <div class="mc teal">
+        <div class="mc-top">
+          <span class="mc-label">Active Policies</span>
+          <div class="mc-icon">📋</div>
+        </div>
+        <div class="mc-val">18,542</div>
+        <div class="mc-delta up">↑ 4.1% this month</div>
+      </div>
+      <div class="mc blue">
+        <div class="mc-top">
+          <span class="mc-label">Claims Filed</span>
+          <div class="mc-icon">⏱</div>
+        </div>
+        <div class="mc-val">2,187</div>
+        <div class="mc-delta dn">↓ 2.3% vs last</div>
+      </div>
+      <div class="mc amber">
+        <div class="mc-top">
+          <span class="mc-label">Fraud Alerts</span>
+          <div class="mc-icon">🛡</div>
+        </div>
+        <div class="mc-val">74</div>
+        <div class="mc-delta up">↓ 18% prevented</div>
+      </div>
+      <div class="mc red">
+        <div class="mc-top">
+          <span class="mc-label">Avg Risk Score</span>
+          <div class="mc-icon">⭐</div>
+        </div>
+        <div class="mc-val">3.8<span style="font-size:14px;font-weight:400;color:var(--text-muted)">/10</span></div>
+        <div class="mc-delta neutral">Low-medium band</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="col2">
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Claims by Category</span></div>
+        <div class="bar-row"><span class="bar-lbl">Auto</span><div class="bar-track"><div class="bar-fill" data-w="41%" style="background:var(--teal);"></div></div><span class="bar-pct">41%</span></div>
+        <div class="bar-row"><span class="bar-lbl">Health</span><div class="bar-track"><div class="bar-fill" data-w="26%" style="background:var(--blue);"></div></div><span class="bar-pct">26%</span></div>
+        <div class="bar-row"><span class="bar-lbl">Property</span><div class="bar-track"><div class="bar-fill" data-w="19%" style="background:var(--amber);"></div></div><span class="bar-pct">19%</span></div>
+        <div class="bar-row"><span class="bar-lbl">Life</span><div class="bar-track"><div class="bar-fill" data-w="9%" style="background:var(--purple);"></div></div><span class="bar-pct">9%</span></div>
+        <div class="bar-row"><span class="bar-lbl">Travel</span><div class="bar-track"><div class="bar-fill" data-w="5%" style="background:var(--red);"></div></div><span class="bar-pct">5%</span></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Portfolio Trend — 2026</span></div>
+        <div class="trend-wrap">
+          <svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:130px;display:block;">
+            <defs>
+              <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00c9a7" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#00c9a7" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid lines -->
+            <line x1="0" y1="30" x2="300" y2="30" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="0" y1="60" x2="300" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="0" y1="90" x2="300" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <!-- Area fill -->
+            <path d="M0 100 L37 88 L75 78 L112 84 L150 62 L187 48 L225 38 L262 26 L300 18 L300 125 L0 125Z" fill="url(#tg)"/>
+            <!-- Line -->
+            <path d="M0 100 L37 88 L75 78 L112 84 L150 62 L187 48 L225 38 L262 26 L300 18" fill="none" stroke="#00c9a7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Dots -->
+            <circle cx="150" cy="62" r="3" fill="#00c9a7"/>
+            <circle cx="300" cy="18" r="3" fill="#00c9a7"/>
+            <!-- Labels -->
+            <text x="0"   y="125" font-size="8" fill="#4d5668">Jan</text>
+            <text x="34"  y="125" font-size="8" fill="#4d5668">Feb</text>
+            <text x="71"  y="125" font-size="8" fill="#4d5668">Mar</text>
+            <text x="108" y="125" font-size="8" fill="#4d5668">Apr</text>
+            <text x="145" y="125" font-size="8" fill="#4d5668">May</text>
+            <text x="182" y="125" font-size="8" fill="#4d5668">Jun</text>
+            <text x="219" y="125" font-size="8" fill="#4d5668">Jul</text>
+            <text x="256" y="125" font-size="8" fill="#4d5668">Aug</text>
+            <text x="288" y="125" font-size="8" fill="#4d5668">Sep</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table + Quick Access -->
+    <div class="col2">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="card-hd" style="padding:18px 22px 0;"><span class="card-title">Recent Claims</span><a href="pages/claims.html" class="card-link">View all →</a></div>
+        <table class="tbl" style="margin-top:10px;">
+          <thead><tr><th>ID</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;">CLM-4412</td><td>Vehicle Damage</td><td>₹1,40,000</td><td><span class="badge b-red">Fraud Risk</span></td></tr>
+            <tr><td style="font-weight:600;">CLM-4398</td><td>Health</td><td>₹62,000</td><td><span class="badge b-green">Approved</span></td></tr>
+            <tr><td style="font-weight:600;">CLM-4381</td><td>Property</td><td>₹3,20,000</td><td><span class="badge b-amber">Pending</span></td></tr>
+            <tr><td style="font-weight:600;">CLM-4370</td><td>Theft — Auto</td><td>₹8,50,000</td><td><span class="badge b-blue">Review</span></td></tr>
+            <tr><td style="font-weight:600;">CLM-4355</td><td>Life</td><td>₹25,00,000</td><td><span class="badge b-green">Approved</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-hd"><span class="card-title">AI Modules</span></div>
+        <div class="module-grid">
+          <a href="pages/policy.html" class="mod-card">
+            <div class="mod-icon" style="background:var(--teal-dim);">📄</div>
+            <div class="mod-name">Policy Analyzer</div>
+            <div class="mod-desc">AI policy assessment</div>
+          </a>
+          <a href="pages/claims.html" class="mod-card">
+            <div class="mod-icon" style="background:var(--blue-dim);">⏱</div>
+            <div class="mod-name">Claims Processor</div>
+            <div class="mod-desc">Smart claim decisions</div>
+          </a>
+          <a href="pages/risk.html" class="mod-card">
+            <div class="mod-icon" style="background:var(--amber-dim);">⭐</div>
+            <div class="mod-name">Risk Scorer</div>
+            <div class="mod-desc">Profile risk scoring</div>
+          </a>
+          <a href="pages/fraud.html" class="mod-card">
+            <div class="mod-icon" style="background:var(--red-dim);">🛡</div>
+            <div class="mod-name">Fraud Detector</div>
+            <div class="mod-desc">Catch suspicious claims</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI row -->
+    <div class="stat-trio">
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--teal);">₹9.2Cr</div>
+        <div class="stat-lbl">Total Claims Value — Apr 2026</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--green);">76%</div>
+        <div class="stat-lbl">Claim Approval Rate</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="color:var(--amber);">₹1.4Cr</div>
+        <div class="stat-lbl">Fraud Prevented This Month</div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>

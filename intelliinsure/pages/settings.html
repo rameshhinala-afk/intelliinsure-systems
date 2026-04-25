@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings — IntelliInsure</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<div class="shell">
+  <script src="../js/sidebar.js"></script>
+  <script>buildSidebar('../');</script>
+
+  <main class="main">
+    <div class="ph">
+      <div><h1 class="ph-title">Settings</h1><p class="ph-sub">Platform configuration and AI preferences</p></div>
+      <button class="btn btn-teal" onclick="toast('Settings saved!')">Save Changes</button>
+    </div>
+
+    <div class="col2">
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Company Profile</span></div>
+        <div class="fg"><label>Company Name</label><input type="text" value="IntelliInsure Systems Pvt. Ltd."/></div>
+        <div class="fg2">
+          <div class="fg"><label>IRDAI Registration No.</label><input type="text" value="IRDAI/GIC/2018/00341"/></div>
+          <div class="fg"><label>CIN</label><input type="text" value="U66000KA2018PTC112345"/></div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Headquarters</label><input type="text" value="Bengaluru, Karnataka"/></div>
+          <div class="fg"><label>Operating Since</label><input type="text" value="2018"/></div>
+        </div>
+        <div class="fg">
+          <label>Lines of Business</label>
+          <input type="text" value="Motor, Health, Property, Life, Travel, Marine"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><span class="card-title">AI Engine Configuration</span></div>
+        <div class="fg">
+          <label>AI Model</label>
+          <select>
+            <option>claude-sonnet-4-20250514 (Recommended)</option>
+            <option>claude-opus-4-6</option>
+            <option>claude-haiku-4-5</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>AI Response Language</label>
+          <select>
+            <option>English</option>
+            <option>Hindi</option>
+            <option>Telugu</option>
+            <option>Tamil</option>
+            <option>Kannada</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Default Fraud Escalation Threshold</label>
+          <select>
+            <option>High & Very High → Auto-refer to SIU</option>
+            <option>Very High only → Auto-refer to SIU</option>
+            <option>Medium and above → Flag for review</option>
+            <option>Manual review only</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Max AI Response Tokens</label>
+          <input type="number" value="1000" min="500" max="4000"/>
+        </div>
+        <div style="padding:10px 14px;background:var(--teal-dim);border:1px solid rgba(0,201,167,0.2);border-radius:var(--radius);font-size:12.5px;color:var(--teal);">
+          ✦ AI engine is active and operational. All modules are using Claude Sonnet 4.
+        </div>
+      </div>
+    </div>
+
+    <div class="col2">
+      <div class="card">
+        <div class="card-hd"><span class="card-title">User Account</span></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+          <div class="sb-avatar" style="width:52px;height:52px;font-size:18px;">MR</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">M. Raghavan</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);">Senior Underwriter · Bengaluru</div>
+            <span class="badge b-teal" style="margin-top:4px;">Admin Access</span>
+          </div>
+        </div>
+        <div class="fg"><label>Full Name</label><input type="text" value="Murali Raghavan"/></div>
+        <div class="fg"><label>Email</label><input type="email" value="m.raghavan@intelliinsure.in"/></div>
+        <div class="fg"><label>Department</label><input type="text" value="Underwriting &amp; Risk"/></div>
+        <div class="fg"><label>Employee ID</label><input type="text" value="EMP-2021-0441"/></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Notification Preferences</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;">Fraud Alerts</div>
+              <div style="font-size:12px;color:var(--text-muted);">When AI flags High/Very High fraud risk</div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;cursor:pointer;">
+              <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--teal);"/>
+              <span style="font-size:13px;color:var(--text-secondary);">On</span>
+            </label>
+          </div>
+          <div style="border-top:1px solid var(--border);"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;">Claim Queue Alerts</div>
+              <div style="font-size:12px;color:var(--text-muted);">When queue exceeds 20 pending items</div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;cursor:pointer;">
+              <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--teal);"/>
+              <span style="font-size:13px;color:var(--text-secondary);">On</span>
+            </label>
+          </div>
+          <div style="border-top:1px solid var(--border);"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;">Daily AI Reports</div>
+              <div style="font-size:12px;color:var(--text-muted);">Morning summary delivered at 8 AM</div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;cursor:pointer;">
+              <input type="checkbox" style="width:16px;height:16px;accent-color:var(--teal);"/>
+              <span style="font-size:13px;color:var(--text-secondary);">Off</span>
+            </label>
+          </div>
+          <div style="border-top:1px solid var(--border);"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13.5px;font-weight:500;">High-Risk Policy Renewals</div>
+              <div style="font-size:12px;color:var(--text-muted);">14 days before renewal for risk &gt; 7/10</div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;cursor:pointer;">
+              <input type="checkbox" checked style="width:16px;height:16px;accent-color:var(--teal);"/>
+              <span style="font-size:13px;color:var(--text-secondary);">On</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box ib-info" style="margin-top:4px;">
+      <span>ℹ</span>
+      <span>This is a front-end prototype. Settings changes are visual only. To connect a live backend, integrate the REST API endpoints from your insurance management system.</span>
+    </div>
+  </main>
+</div>
+<script src="../js/app.js"></script>
+</body>
+</html>
